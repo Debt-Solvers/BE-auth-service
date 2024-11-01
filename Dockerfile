@@ -1,37 +1,37 @@
-# Start with a base image that has Go installed
+# Build stage
 FROM golang:1.23 AS builder
 
-# Set the Current Working Directory inside the container
+# Set the working directory inside the container
 WORKDIR /app
 
 # Copy go.mod and go.sum files to the container
 COPY go.mod go.sum ./
 
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
-RUN go mod tidy
+# Download all dependencies
+RUN go mod download
 
 # Copy the source code into the container
 COPY . .
 
-# Build the Go app
+# Build the Go app and specify output binary name
 RUN go build -o auth-service ./cmd/auth-service/main.go
 
-# Ensure the binary is executable
-RUN chmod +x /app/auth-service
-
-# Start a new stage from scratch
+# Runtime stage
 FROM alpine:latest AS runtime
 
-# Install necessary dependencies
+# Install necessary dependencies (if needed)
 RUN apk add --no-cache libc6-compat
 
-# Set the Current Working Directory inside the container
+# Set the working directory inside the container
 WORKDIR /root/
 
-# Copy the Pre-built binary file from the previous stage
+# Copy the pre-built binary from the build stage
 COPY --from=builder /app/auth-service .
 
-# Expose port 8080 (or whatever port your service uses)
+# Copy the configuration directory (if needed for runtime)
+COPY --from=builder /app/configs /root/configs
+
+# Expose the port on which the application will run
 EXPOSE 8080
 
 # Command to run the executable

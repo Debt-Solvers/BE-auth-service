@@ -7,13 +7,13 @@ services:
       dockerfile: Dockerfile
     container_name: auth_service
     environment:
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - DB_SSLMODE=${DB_SSLMODE}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRATION_HOURS=${JWT_EXPIRATION_HOURS}
+      - DB_HOST=my_postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=debt_solver
+      - DB_SSLMODE=disable
+      - JWT_SECRET=debt_solver
+      - JWT_EXPIRATION_HOURS=24
     ports:
       - "8080:8080"
