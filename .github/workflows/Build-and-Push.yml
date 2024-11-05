@@ -6,7 +6,8 @@ on:
       - main
 
 jobs:
-  build:
+  build_image:
+    name: Build Docker Image # Name for the build job
     runs-on: ubuntu-latest
 
     steps:
@@ -18,17 +19,27 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      # Step 3: Log in to Docker Hub
+      # Step 3: Build the Docker image
+      - name: Build Docker Image
+        run: docker build -t billzhaohongwei/caa900debtsolverproject:auth-service .
+
+  push_image:
+    name: Push Docker Image # Name for the push job
+    runs-on: ubuntu-latest
+    needs: build_image # This ensures the push happens after the build completes successfully
+
+    steps:
+      # Step 1: Check out the code from the repo (optional for push, but good practice)
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Step 4: Build the Docker image
-      - name: Build Docker Image
-        run: docker build -t billzhaohongwei/caa900debtsolverproject:auth-service .
-
-      # Step 5: Push the Docker image to Docker Hub
+      # Step 3: Push the Docker image to Docker Hub
       - name: Push Docker Image
         run: docker push billzhaohongwei/caa900debtsolverproject:auth-service
