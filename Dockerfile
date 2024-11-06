@@ -25,6 +25,9 @@ RUN apk add --no-cache libc6-compat
 # Set the working directory inside the container
 WORKDIR /root/
 
+# Copy the db directory, including schema.sql
+COPY --from=builder /app/db /root/db
+
 # Copy the pre-built binary from the build stage
 COPY --from=builder /app/auth-service .
 
